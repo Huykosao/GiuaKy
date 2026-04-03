@@ -4,19 +4,40 @@ import { User, Mail, Book, Globe } from 'lucide-react'
 const About = () => {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [formData, setFormData] = useState({ name: '', id: '', class: '' })
 
-  useEffect(() => {
+  const fetchProfile = () => {
+    setLoading(true)
     fetch('http://localhost:5000/about')
       .then(res => res.json())
       .then(data => {
         setData(data)
+        if (data?.student) {
+          setFormData({ name: data.student.name, id: data.student.id, class: data.student.class })
+        }
         setLoading(false)
       })
       .catch(err => {
         console.error('Fetch about error:', err)
         setLoading(false)
       })
+  }
+
+  useEffect(() => {
+    fetchProfile()
   }, [])
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setLoading(true)
+    fetch('http://localhost:5000/about', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    }).then(() => {
+      fetchProfile()
+    })
+  }
 
   return (
     <div className="page-about">
@@ -33,23 +54,34 @@ const About = () => {
           <div className="profile-info">
             {loading ? (
               <p>Loading profile info...</p>
+            ) : !data?.student ? (
+              <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                <p>Profile is empty. Please enter your data:</p>
+                <input required placeholder="Họ và Tên" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                <input required placeholder="Mã SCV" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} />
+                <input required placeholder="Lớp" value={formData.class} onChange={e => setFormData({...formData, class: e.target.value})} />
+                <button type="submit" className="btn-primary">Save to Database</button>
+              </form>
             ) : (
               <>
                 <div className="info-item">
                   <span className="label">Họ tên:</span>
-                  <span className="value">{data?.student?.name || '[Tên của bạn]'}</span>
+                  <span className="value">{data.student.name}</span>
                 </div>
                 <div className="info-item">
                   <span className="label">MSSV:</span>
-                  <span className="value">{data?.student?.id || '[Mã số sinh viên]'}</span>
+                  <span className="value">{data.student.id}</span>
                 </div>
                 <div className="info-item">
                   <span className="label">Lớp:</span>
-                  <span className="value">{data?.student?.class || '[Lớp của bạn]'}</span>
+                  <span className="value">{data.student.class}</span>
                 </div>
                 <div className="info-item">
                   <span className="label">App Name:</span>
                   <span className="value">{data?.appName || 'DevOps App'}</span>
+                </div>
+                <div style={{marginTop: '15px' }}>
+                  <button className="btn-primary" onClick={() => setData({...data, student: null})}>Edit Profile</button>
                 </div>
               </>
             )}
