@@ -8,6 +8,10 @@ const itemSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  isProfile: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
