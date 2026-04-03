@@ -33,6 +33,9 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/about" element={<About />} />
           </Routes>
+          <footer className="app-footer">
+            <p>&copy; 2026 DevOps Midterm Project. All rights reserved.</p>
+          </footer>
         </main>
       </div>
     </BrowserRouter>
