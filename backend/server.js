@@ -26,6 +26,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
 
+// Version API
+app.get('/version', (req, res) => {
+  res.json({ version: '1.0.0', stage: 'production' });
+});
+
 // About API
 app.get('/about', (req, res) => {
   res.json({
